@@ -2,36 +2,40 @@
 
 ## Thông tin nhóm
 
-- Thành viên 1: TODO_STUDENT
-- Thành viên 2: TODO_STUDENT
+- Thành viên 1: Phạm Minh Duy - 1871020192
+- Thành viên 2: Vũ Tuấn Minh - 1871020394
 
 ## Assets
 
-TODO_STUDENT: Liệt kê tài sản cần bảo vệ, ví dụ plaintext, AES key, IV, ciphertext, file đầu vào, file đầu ra và log.
+- Plaintext: Dữ liệu gốc cần bảo vệ khỏi lộ.
+- AES key và IV: Khóa mã hóa, nếu lộ sẽ cho phép giải mã ciphertext.
+- Ciphertext: Dữ liệu mã hóa đang truyền, cần bảo vệ khỏi sửa đổi.
+- File đầu vào/đầu ra: Plaintext trong file.
+- Logs: Chứa key/IV/ciphertext, nếu lộ sẽ rò rỉ thông tin nhạy cảm.
 
 ## Attacker model
 
-TODO_STUDENT: Mô tả đối tượng tấn công có thể nghe lén mạng LAN, bắt gói tin, sửa ciphertext, replay packet hoặc đọc log.
+Attacker có khả năng nghe lén mạng LAN, bắt gói tin TCP, sửa đổi ciphertext trong transit, 
+gửi lại packet cũ (replay), hoặc đọc logs nếu có quyền truy cập file hệ thống. 
+Giả định attacker không có quyền truy cập vật lý vào máy sender/receiver.
 
 ## Threats
 
-TODO_STUDENT: Nêu ít nhất 3 mối đe dọa cụ thể, ví dụ:
-- Key disclosure do key/IV gửi plaintext.
-- Tampering do ciphertext bị sửa.
-- Replay attack do packet cũ bị gửi lại.
-- Log leakage do key bị ghi vào log.
-- No authentication do Receiver không xác thực Sender.
+- Key disclosure: Key/IV gửi plaintext qua kênh khóa, attacker nghe lén có thể giải mã ciphertext.
+- Tampering: Ciphertext bị sửa trong transit, dẫn đến giải mã sai hoặc lỗi.
+- Replay attack: Attacker gửi lại packet cũ, receiver xử lý lại.
+- Log leakage: Key/IV ghi vào log file, nếu attacker đọc được sẽ lộ khóa.
+- No authentication: Receiver không xác thực sender, bất kỳ ai cũng có thể gửi packet.
 
 ## Mitigations
 
-TODO_STUDENT: Nêu ít nhất 3 biện pháp giảm thiểu, ví dụ:
-- Không gửi key plaintext trong hệ thống thật.
-- Dùng TLS hoặc cơ chế trao đổi khóa an toàn.
-- Dùng AES-GCM để có xác thực dữ liệu.
-- Không ghi key thật vào log trong môi trường thật.
-- Thêm nonce/timestamp để giảm replay.
-- Thêm xác thực Sender.
+- Không gửi key plaintext: Dùng TLS hoặc Diffie-Hellman để trao đổi khóa an toàn.
+- Dùng AES-GCM: Thay CBC để có xác thực dữ liệu tích hợp.
+- Không ghi key vào log: Chỉ log trong môi trường dev, mã hóa log nếu cần.
+- Chống replay: Thêm nonce hoặc timestamp vào packet.
+- Xác thực sender: Dùng certificate hoặc shared secret để verify.
 
 ## Residual risks
 
-TODO_STUDENT: Nêu ít nhất 1 rủi ro còn lại, ví dụ hệ thống vẫn chưa an toàn vì key channel chỉ là mô phỏng, chưa có TLS, chưa có xác thực và chưa chống replay đầy đủ.
+Hệ thống vẫn không an toàn cho production vì kênh khóa chỉ mô phỏng gửi plaintext, chưa có TLS, 
+chưa có authentication, chưa chống replay đầy đủ, và logs có thể lộ key nếu không bảo vệ.
